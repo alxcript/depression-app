@@ -6,7 +6,7 @@
     <h6 class="card-subtitle mb-2 text-body-secondary">
       Ingrese los campos a continuación
     </h6>
-    <form action="" class="needs-validation" novalidate>
+    <form action="" class="row needs-validation gy-3" novalidate>
       <div class="input-group has-validation">
         <span class="input-group-text">Nombre Completo</span>
         <input
@@ -28,7 +28,43 @@
         </div>
       </div>
 
-      <div class="col-12">
+      <div class="col-md-4">
+        <label for="fechaNacimiento" class="form-label">Fecha Nacimiento</label>
+        <input
+          type="date"
+          class="form-control"
+          id="fechaNacimiento"
+          required
+        />
+      </div>
+
+      <div class="col-md-4">
+        <label for="sexo" class="form-label">Sexo</label>
+        <select id="sexo" class="form-select">
+          <option selected>Hombre</option>
+          <option>Mujer</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="peso" class="form-label">Peso</label>
+        <div class="input-group">
+            <input
+              type="number"
+              class="form-control"
+              id="peso"
+              min="0"
+              required
+            />
+            <span class="input-group-text">Kg.</span>
+            <div class="invalid-feedback">
+                Ingrese un peso mayor a 0.
+              </div>
+        </div>
+        
+      </div>
+
+      <div class="col-md-12">
         <label for="direccion" class="form-label">Dirección</label>
         <input
           type="text"
@@ -38,18 +74,31 @@
         />
       </div>
 
-      <div class="mb-3">
+      <div class="col-md-6">
         <label for="exampleFormControlInput1" class="form-label">Email</label>
-        <input
-          type="email"
-          class="form-control"
-          id="exampleFormControlInput1"
-          placeholder="name@example.com"
-          required
-        />
+        <div class="input-group">
+            <span class="input-group-text" id="button-addon2"><i class="fa-solid fa-envelope"></i></span>
+            <input
+            type="email"
+            class="form-control"
+            id="exampleFormControlInput1"
+            placeholder="name@example.com"
+            required
+          />
+        </div>
+        
         <div class="invalid-feedback">
           Escriba un email válido por favor.
         </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="twitter" class="form-label">Twitter</label>
+        <div class="input-group">
+            <span class="input-group-text" id="button-addon2"><i class="fa-brands fa-twitter" style="color: #0861fd;"></i></span>
+            <input type="text" class="form-control" id="twitter" placeholder="Ingrese su ID" aria-label="Recipient's username" aria-describedby="button-addon2">
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2">Validar</button>
+          </div>
       </div>
 
       <div class="mb-3">
@@ -62,8 +111,7 @@
           rows="3"
         ></textarea>
       </div>
-
-      <div class="col-12">
+      <div class="col-md-12">
         <div class="form-check">
           <input
             class="form-check-input"
@@ -78,7 +126,10 @@
           <div class="invalid-feedback">Debes estar de acuerdo antes de continuar.</div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Enviar</button>
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+
+      </div>
     </form>
   </div>
 </div>

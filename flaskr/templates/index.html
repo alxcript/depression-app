@@ -2,6 +2,41 @@
 
 {% block content %}
 
-<h1>Hello World</h1>
+<div class="banner">
+    <img src="{{url_for('static', filename='images/mental-health-banner.jpg')}}" class="img-fluid" alt="">
+</div>
+
+<div class="card-group g-3">
+    <div class="card">
+      <img src="{{url_for('static', filename='images/medico1.jpeg')}}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur eos nostrum aperiam sed debitis magnam quia nulla, saepe libero assumenda amet, commodi voluptate accusamus fugiat. Mollitia, suscipit? Ex, labore molestiae.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+    <div class="card">
+      <img src="{{url_for('static', filename='images/medico2.jpg')}}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque accusantium ad quod non, vitae consectetur, ullam perspiciatis tempore aspernatur</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+    <div class="card">
+      <img src="{{url_for('static', filename='images/medico3.jpg')}}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Itaque provident dolore quibusdam reiciendis fugit fuga, nihil est, rem recusandae facilis beatae dicta laborum modi sint voluptate repellat corporis dolores. Aspernatur.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
