@@ -7,6 +7,20 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+
+@app.route('/admin')
+def admin_home():
+    return render_template('admin/index.html')
+@app.route('/admin/RegistroPacientes')
+def admin_RegistroPacientes():
+    return render_template('admin/forms.html')
+@app.route('/admin/GestionarPacientes')
+def admin_GestionarPacientes():
+    return render_template('admin/tables.html')
+
+
+
+
 @app.get("/formulario")
 def formulario():
     return render_template("formulario.html")

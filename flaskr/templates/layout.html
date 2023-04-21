@@ -37,6 +37,12 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{{ url_for("home") }}">Home</a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ url_for('admin_home') }}">Admin</a>
+            </li>
+
+
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('formulario') }}">Formulario</a>
             </li>
@@ -56,6 +62,7 @@
                     >Formulario</a
                   >
                 </li>
+                
                 <li><a class="dropdown-item" href="#">Another action</a></li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
