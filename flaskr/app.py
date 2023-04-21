@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
 from TwitterUserManager import TwitterUserManager
+from DepressionDetector import DepressionDetector
 from flask_sqlalchemy import SQLAlchemy
 #from flask_migrate import Migrate
 
@@ -53,6 +54,8 @@ def getUsersByUsername():
 def users_create():
     print("creating user..")
     if request.method == "POST":
+        depression_detector = DepressionDetector()
+        depression_detector.predict("bad")
         user = User(
             nickname="MyNick",
             email=request.form["email"],
