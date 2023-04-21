@@ -1,7 +1,22 @@
-from flask import Flask, render_template, request, jsonify, make_response
-import tweepy
+from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
+from TwitterUserManager import TwitterUserManager
+from flask_sqlalchemy import SQLAlchemy
+#from flask_migrate import Migrate
+
+# create the extension
+db = SQLAlchemy()
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://alxcript_da_use:da*use10@mysql-alxcript.alwaysdata.net/alxcript_depresion_app'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# initialize the app with the extension
+db.init_app(app)
+
+from models import User, DepresionScore, TwitterUser, Tweet, PatientData
+
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def home():
@@ -34,25 +49,35 @@ def getUsersByUsername():
     print(usuariosEncontrados)
     return res
 
+@app.route("/users/create", methods=["GET", "POST"])
+def users_create():
+    print("creating user..")
+    if request.method == "POST":
+        user = User(
+            nickname="MyNick",
+            email=request.form["email"],
+            password="1234",
+            patients=[PatientData(
+                fullname = request.form["firstname"],
+                gender = request.form["gender"]
+            )]
+        )
+        print("storing user in db")
+        print(user)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template("formulario.html")
+
 def searchUserInTwitter(username):
-    print("Userna:[" + username + "]")
     consumer_key="FjXVroKiU4AerXAHae02OcUoz"
     consumer_secret="ofSa8wOHkzLIKi8s82gVjHEo1rLDKgNBTUO1OYI0gG9fhFnkQS"
-    bearer_token="AAAAAAAAAAAAAAAAAAAAABrumQEAAAAA4ZoFwe1YCtfJj8EQj48Yy52%2FDFU%3DBA2Lg3n4UcIFkqSZfb16esmgKpzi0yAJYxzJU6TltrTz0b9S1l"
     access_token="4855557995-GdSPjgmNyn2im7KvAH6ZI7l2BE9TIMmKJDKanX7"
     access_token_secret="NB9brsICr4lKHJBB6404oJq3TCT9H7DmDiCqLskDoXW3A"
-
-    auth = tweepy.OAuth1UserHandler(
-        consumer_key, consumer_secret, access_token, access_token_secret
-    )
-
-    api = tweepy.API(auth)
-
-    listUsersFound = api.search_users(q=username)
-    namesFound = []
-    for user in listUsersFound:
-        namesFound.append({"screen_name": user.screen_name, "profile_image_url": user.profile_image_url_https, "name": user.name})
-    return namesFound
+    twitter_manager = TwitterUserManager(api_key=consumer_key, api_secret_key=consumer_secret, access_token=access_token, access_token_secret=access_token_secret)
+    #print(twitter_manager.get_tweets(1499586805))
+    return twitter_manager.search_users(username)
 
 if __name__ == "__main__":
     app.run()

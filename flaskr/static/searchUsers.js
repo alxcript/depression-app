@@ -20,6 +20,7 @@ searchInput.addEventListener('input', event => {
             })
                 .then(response => {
                     const users = response.data.data;
+                    console.log("usersFounded: ", users);
                     if (users.length > 0) {
                         options.innerHTML = '';
                         users.forEach(user => {

@@ -6,11 +6,11 @@
     <h6 class="card-subtitle mb-2 text-body-secondary">
       Ingrese los campos a continuación
     </h6>
-    <form action="" autocomplete="off" class="row needs-validation gy-3" novalidate>
+    <form action="{{ url_for('users_create') }}" method="POST" autocomplete="off" class="row needs-validation gy-3" novalidate>
       <div class="input-group has-validation">
         <span class="input-group-text">Nombre Completo</span>
-        <input type="text" aria-label="First name" class="form-control" placeholder="Nombres" required />
-        <input type="text" aria-label="Last name" class="form-control" placeholder="Apellidos" required />
+        <input type="text" aria-label="First name" name="firstname" class="form-control" placeholder="Nombres" required />
+        <input type="text" aria-label="Last name" name="lastname" class="form-control" placeholder="Apellidos" required />
         <div class="invalid-feedback">
           Llene sus nombres y apellidos por favor.
         </div>
@@ -23,7 +23,7 @@
 
       <div class="col-md-4">
         <label for="sexo" class="form-label">Sexo</label>
-        <select id="sexo" class="form-select">
+        <select id="sexo" name="gender" class="form-select">
           <option selected>Hombre</option>
           <option>Mujer</option>
         </select>
@@ -50,7 +50,7 @@
         <label for="exampleFormControlInput1" class="form-label">Email</label>
         <div class="input-group">
           <span class="input-group-text" id="button-addon2"><i class="fa-solid fa-envelope"></i></span>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com"
+          <input type="email" name="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com"
             required />
         </div>
 
