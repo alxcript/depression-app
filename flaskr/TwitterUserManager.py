@@ -33,9 +33,9 @@ class TwitterUserManager:
         }
         return user_data
     
-    def get_tweets(self, user_id):
+    def get_tweets(self, sn):
         tweets = []
-        for tweet in  self.api.user_timeline(user_id=user_id, 
+        for tweet in  self.api.user_timeline(screen_name=sn, 
             count=150,
             include_rts = False,
             # Necessary to keep full_text 

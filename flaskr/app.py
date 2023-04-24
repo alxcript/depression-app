@@ -54,8 +54,20 @@ def getUsersByUsername():
 def users_create():
     print("creating user..")
     if request.method == "POST":
+        consumer_key="FjXVroKiU4AerXAHae02OcUoz"
+        consumer_secret="ofSa8wOHkzLIKi8s82gVjHEo1rLDKgNBTUO1OYI0gG9fhFnkQS"
+        access_token="4855557995-GdSPjgmNyn2im7KvAH6ZI7l2BE9TIMmKJDKanX7"
+        access_token_secret="NB9brsICr4lKHJBB6404oJq3TCT9H7DmDiCqLskDoXW3A"
+        twitter_manager = TwitterUserManager(api_key=consumer_key, api_secret_key=consumer_secret, access_token=access_token, access_token_secret=access_token_secret)
+        tweets = twitter_manager.get_tweets(request.form["twitter-screen-name"])
+        
         depression_detector = DepressionDetector()
-        depression_detector.predict("bad")
+        #depression_detector.predict("bad")
+        resultados_analizados = []
+        for tweet in tweets:
+            analized = depression_detector.predict(tweet["full_text"])
+            resultados_analizados.append({'text': tweet["full_text"], 'res': analized})
+        
         user = User(
             nickname="MyNick",
             email=request.form["email"],
@@ -69,9 +81,14 @@ def users_create():
         print(user)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('home'))
+        return render_template("resultados.html", len = len(resultados_analizados), TweetsList = resultados_analizados)
 
     return render_template("formulario.html")
+
+@app.route("/resultados", methods=["GET"])
+def resultados():
+    return render_template("resultados.html")
+
 
 def searchUserInTwitter(username):
     consumer_key="FjXVroKiU4AerXAHae02OcUoz"
@@ -79,7 +96,6 @@ def searchUserInTwitter(username):
     access_token="4855557995-GdSPjgmNyn2im7KvAH6ZI7l2BE9TIMmKJDKanX7"
     access_token_secret="NB9brsICr4lKHJBB6404oJq3TCT9H7DmDiCqLskDoXW3A"
     twitter_manager = TwitterUserManager(api_key=consumer_key, api_secret_key=consumer_secret, access_token=access_token, access_token_secret=access_token_secret)
-    #print(twitter_manager.get_tweets(1499586805))
     return twitter_manager.search_users(username)
 
 if __name__ == "__main__":

@@ -6,8 +6,6 @@ from nltk.stem import WordNetLemmatizer
 
 class DepressionDetector:
     def __init__(self):
-        print("Direc:")
-        print(os.path.abspath(os.getcwd()))
         self.modelDetector = joblib.load('./flaskr/nb_depression_model.sav')
         self.vectorizer = joblib.load('./flaskr/vectorize.pkl')
 
@@ -21,6 +19,6 @@ class DepressionDetector:
         example_counts = self.vectorizer.transform([a])
         prediction = self.modelDetector.predict(example_counts)
         if prediction[0] == 1:
-            print("Depression")
+            return "Depression"
         else:
-            print("Positive")
+            return "Positive"
