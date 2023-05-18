@@ -10,6 +10,7 @@ tasks:
       pip install -e .
       flask init-db
   - command: |
+      python -c "import nltk; nltk.download('wordnet')"
       flask run
 
 vscode:

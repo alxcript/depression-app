@@ -39,4 +39,11 @@
     </div>
   </div>
 
+  <div>
+    <form action="{{ url_for('generateResponseChatbot') }}" method="POST">
+      <input type="text" name="query" />
+      <input type="submit" value="Send" />
+    </form>
+  </div>
+
 {% endblock %}

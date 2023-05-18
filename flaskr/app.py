@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
 from TwitterUserManager import TwitterUserManager
 from DepressionDetector import DepressionDetector
+from Chatbot import Chatbot
 from flask_sqlalchemy import SQLAlchemy
-#from flask_migrate import Migrate
+import datetime
 
 # create the extension
 db = SQLAlchemy()
@@ -54,10 +55,10 @@ def getUsersByUsername():
 def users_create():
     print("creating user..")
     if request.method == "POST":
-        consumer_key="FjXVroKiU4AerXAHae02OcUoz"
-        consumer_secret="ofSa8wOHkzLIKi8s82gVjHEo1rLDKgNBTUO1OYI0gG9fhFnkQS"
-        access_token="4855557995-GdSPjgmNyn2im7KvAH6ZI7l2BE9TIMmKJDKanX7"
-        access_token_secret="NB9brsICr4lKHJBB6404oJq3TCT9H7DmDiCqLskDoXW3A"
+        consumer_key="0UnkO55lofzPjPtX3zpmd4xRt"
+        consumer_secret="ACloPt81xa4USf6PIutsIThrMODZrdA1ytHY55wGYlusDlfiIT"
+        access_token="4855557995-NEvKeV12hruDOoLbrn36hAzQL1KWIStWnezLDJE"
+        access_token_secret="LmdFUtUjqnI6u7t2aGBtAMa1PfIFK534HloxbPt7XwEu0"
         twitter_manager = TwitterUserManager(api_key=consumer_key, api_secret_key=consumer_secret, access_token=access_token, access_token_secret=access_token_secret)
         tweets = twitter_manager.get_tweets(request.form["twitter-screen-name"])
         
@@ -85,18 +86,33 @@ def users_create():
 
     return render_template("formulario.html")
 
-@app.route("/resultados", methods=["GET"])
-def resultados():
+@app.route("/resultados-twitter", methods=["GET"])
+def resultados_twitter():
     return render_template("resultados.html")
 
 
 def searchUserInTwitter(username):
-    consumer_key="FjXVroKiU4AerXAHae02OcUoz"
-    consumer_secret="ofSa8wOHkzLIKi8s82gVjHEo1rLDKgNBTUO1OYI0gG9fhFnkQS"
-    access_token="4855557995-GdSPjgmNyn2im7KvAH6ZI7l2BE9TIMmKJDKanX7"
-    access_token_secret="NB9brsICr4lKHJBB6404oJq3TCT9H7DmDiCqLskDoXW3A"
+    consumer_key="0UnkO55lofzPjPtX3zpmd4xRt"
+    consumer_secret="ACloPt81xa4USf6PIutsIThrMODZrdA1ytHY55wGYlusDlfiIT"
+    access_token="4855557995-NEvKeV12hruDOoLbrn36hAzQL1KWIStWnezLDJE"
+    access_token_secret="LmdFUtUjqnI6u7t2aGBtAMa1PfIFK534HloxbPt7XwEu0"
     twitter_manager = TwitterUserManager(api_key=consumer_key, api_secret_key=consumer_secret, access_token=access_token, access_token_secret=access_token_secret)
     return twitter_manager.search_users(username)
+
+
+
+@app.route("/generate-chatbot-response", methods=["POST"])
+def generateResponseChatbot():
+    chatbot = Chatbot()
+    response = chatbot.generateResponse(request.form["query"])
+    return make_response(
+        jsonify(
+            {
+                "response": response,
+                "datetime": datetime.datetime.now()
+            }), 
+            200
+        )
 
 if __name__ == "__main__":
     app.run()
