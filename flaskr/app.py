@@ -1,24 +1,40 @@
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
 from TwitterUserManager import TwitterUserManager
+
 from DepressionDetector import DepressionDetector
 from Chatbot import Chatbot
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
+
+import mysql.connector
+
+db_config = {
+    'user': 'uxo2ihlb0xdfqqsl',
+    'password': 'hxrJaC3zfpXk8yVJ9iAv',
+    'host': 'b6l5dugohgvzb9gw6u4o-mysql.services.clever-cloud.com',
+    'database': 'b6l5dugohgvzb9gw6u4o',
+}
+
+
+#from flask_sqlalchemy import SQLAlchemy
+#from flask_migrate import Migrate
+
+
 # create the extension
-db = SQLAlchemy()
+#db = SQLAlchemy()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://alxcript_da_use:da*use10@mysql-alxcript.alwaysdata.net/alxcript_depresion_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize the app with the extension
-db.init_app(app)
+#db.init_app(app)
 
-from models import User, DepresionScore, TwitterUser, Tweet, PatientData
+#from models import User, DepresionScore, TwitterUser, Tweet, PatientData
 
-with app.app_context():
-    db.create_all()
+#with app.app_context():
+ #   db.create_all()
 
 @app.route("/")
 def home():
@@ -34,6 +50,64 @@ def admin_RegistroPacientes():
 @app.route('/admin/GestionarPacientes')
 def admin_GestionarPacientes():
     return render_template('admin/tables.html')
+
+@app.route('/chat')
+def chat():
+    return render_template('usuario/chat.html')
+
+@app.route('/etapa')
+def etapa():
+    return render_template('usuario/etapa.html')
+
+@app.route('/quiz')
+def quiz():
+    return render_template('quiz/index.php')
+
+@app.route('/etapa/<int:numero>')
+def etapaQz(numero):
+    # Realizar la consulta a la base de datos
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "SELECT * FROM pregunta WHERE etapa_id = %s"
+    cursor.execute(query, (numero,))
+    results = cursor.fetchall()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    return render_template('usuario/cuestionario.html', results=results)
+
+
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    # Obtener los valores de las respuestas del formulario
+    respuestas = []
+    for i in range(1, 10):  # Reemplaza 5 por el número de preguntas que tengas
+        respuesta = request.form.get(f'pregunta{i}')
+        respuestas.append(int(respuesta))
+
+    # Calcular el puntaje total
+    score = sum(respuestas)
+
+    # Guardar el puntaje en la base de datos
+    
+
+    # Redirigir a la página de resultados
+    return redirect(f'/resultados?score={score}')
+
+# Ruta para mostrar los resultados
+@app.route('/resultados')
+def resultados():
+    # Obtener el puntaje desde la base de datos
+    score = int(request.args.get('score'))
+
+    return render_template('usuario/resultados.html', score=score)
+
+
+
+
 
 
 
@@ -104,15 +178,11 @@ def searchUserInTwitter(username):
 @app.route("/generate-chatbot-response", methods=["POST"])
 def generateResponseChatbot():
     chatbot = Chatbot()
-    response = chatbot.generateResponse(request.form["query"])
-    return make_response(
-        jsonify(
-            {
-                "response": response,
-                "datetime": datetime.datetime.now()
-            }), 
-            200
-        )
+    response = chatbot.generateResponse(request.json["query"])
+    return jsonify({
+        "response": response,
+        "datetime": datetime.datetime.now()
+    })
 
 if __name__ == "__main__":
     app.run()
