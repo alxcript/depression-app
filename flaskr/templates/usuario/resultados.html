@@ -2,9 +2,55 @@
 <html>
 <head>
     <title>Resultados</title>
+    <style>
+        .boton {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .verde {
+            background-color: green;
+            color: white;
+        }
+
+        .naranja {
+            background-color: orange;
+            color: white;
+        }
+
+        .rojo {
+            background-color: red;
+            color: white;
+        }
+
+        .violeta {
+            background-color: violet;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <h1>Puntaje obtenido:</h1>
     <h2>{{ score }}</h2>
+    {% if score >= 0 and score <= 4 %}
+        <div class="boton verde">
+            Ausencia de depresión o depresión leve
+        </div>
+    {% elif score >= 5 and score <= 9 %}
+        <div class="boton naranja">
+            Depresión moderada
+        </div>
+    {% elif score >= 10 and score <= 14 %}
+        <div class="boton rojo">
+            Depresión grave
+        </div>
+    {% else %}
+        <div class="boton violeta">
+            Depresión muy grave
+        </div>
+    {% endif %}
 </body>
 </html>

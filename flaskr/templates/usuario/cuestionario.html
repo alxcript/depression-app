@@ -4,6 +4,7 @@
     <title>Cuestionario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/containe.css')}}">
     <style>
         body {
             padding: 20px;
@@ -18,43 +19,39 @@
         .btn-submit {
             margin-top: 20px;
         }
+
+        
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-juego" id="container-juego">
         <h1>Cuestionario</h1>
 
         <form action="/submit" method="POST">
             {% for row in results %}
-            <div class="question">
-                <h3>Pregunta {{ loop.index }}:</h3>
-                <p> {{ row[1] }}</p>
-                <div class="options">
-                    <label>
-                        <input type="radio" name="pregunta{{ loop.index }}" value="0">
-                        Nunca
+            <div class="info">
+                <h3>{{ row[0] }}</h3>
+                <p> Pregunta {{ loop.index }} de 5</p>
+                <div class="opciones">
+                    {% set pregunta_index = loop.index - 1 %}
+                    {% set pregunta_index_2 = loop.index - 0 %}
+                    {% set clase_opciones = 'op' ~ pregunta_index %}
+                    {% set pregunta_index_go = 'pregunta' ~ pregunta_index_2 %}
+                    {% for i in range(pregunta_index*4, pregunta_index*4+4) %}
+                    <label class="{{ clase_opciones }}">
+                        {{ estructura_calificacion[i][0] }}
+                        <input type="radio" name="{{ pregunta_index_go }}" value="{{ estructura_calificacion[i][1] }}">
                     </label>
-                    <label>
-                        <input type="radio" name="pregunta{{ loop.index }}" value="1">
-                        A veces
-                    </label>
-                    <label>
-                        <input type="radio" name="pregunta{{ loop.index }}" value="2">
-                        A menudo
-                    </label>
-                    <label>
-                        <input type="radio" name="pregunta{{ loop.index }}" value="3">
-                        Siempre
-                    </label>
+                    {% endfor %}
                 </div>
             </div>
             {% endfor %}
-            
-
+        
             <!-- Agrega más preguntas aquí -->
-
+        
             <button type="submit" class="btn btn-primary btn-submit"><i class="fas fa-check"></i> Enviar respuestas</button>
         </form>
+        
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

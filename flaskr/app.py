@@ -57,7 +57,18 @@ def chat():
 
 @app.route('/etapa')
 def etapa():
-    return render_template('usuario/etapa.html')
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "SELECT * FROM ETAPA"
+    cursor.execute(query)
+    etapa_list = cursor.fetchall()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    # Pasar los datos a la plantilla etapa.html
+    return render_template('usuario/etapa.html', etapa_list=etapa_list)
 
 @app.route('/quiz')
 def quiz():
@@ -65,18 +76,28 @@ def quiz():
 
 @app.route('/etapa/<int:numero>')
 def etapaQz(numero):
-    # Realizar la consulta a la base de datos
+    # Realizar la consulta a la base de datos para obtener las preguntas de la etapa
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query = "SELECT * FROM pregunta WHERE etapa_id = %s"
+    query = "SELECT P.pregunta_descripcion, E.tema, P.id FROM PREGUNTA AS P INNER JOIN ETAPA AS E ON P.id_etapa = E.id WHERE E.id = %s"
     cursor.execute(query, (numero,))
     results = cursor.fetchall()
+
+    # Obtener los IDs de las preguntas de la etapa 1
+    preguntas_etapa_1_ids = [row[2] for row in results]
+
+    # Obtener la estructura de calificación correspondiente a los IDs de las preguntas de la etapa 1
+    estructura_calificacion = []
+    for pregunta_id in preguntas_etapa_1_ids:
+        cursor.execute("SELECT nombre, puntaje FROM ESTRUCTURA_CALIFICACION WHERE id_pregunta = %s", (pregunta_id,))
+        calificaciones = cursor.fetchall()
+        estructura_calificacion.extend(calificaciones)
 
     # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
-    return render_template('usuario/cuestionario.html', results=results)
+    return render_template('usuario/cuestionario.html', results=results, estructura_calificacion=estructura_calificacion)
 
 
 
@@ -84,7 +105,7 @@ def etapaQz(numero):
 def submit():
     # Obtener los valores de las respuestas del formulario
     respuestas = []
-    for i in range(1, 10):  # Reemplaza 5 por el número de preguntas que tengas
+    for i in range(1, 6):  # Reemplaza 5 por el número de preguntas que tengas
         respuesta = request.form.get(f'pregunta{i}')
         respuestas.append(int(respuesta))
 
@@ -186,3 +207,5 @@ def generateResponseChatbot():
 
 if __name__ == "__main__":
     app.run()
+
+    
