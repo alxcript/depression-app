@@ -51,6 +51,11 @@ def admin_RegistroPacientes():
 def admin_GestionarPacientes():
     return render_template('admin/tables.html')
 
+
+@app.route('/usuario')
+def usuario():
+    return render_template('usuario/index.html')
+
 @app.route('/chat')
 def chat():
     return render_template('usuario/chat.html')

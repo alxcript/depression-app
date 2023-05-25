@@ -42,7 +42,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="javascript:">
+                            <a class="nav-link" href="{{ url_for('etapa') }}">
                                 
                                
                                 <i class="fas fa-laptop-medical" style="color: #80e9ea;"></i>
@@ -142,9 +142,45 @@
                                         </div>
                                     </a>
 
-                                    
+                                    <a href="#!" class="list-group-item list-group-item-action">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-2.jpg" class="avatar rounded-circle">
+                                            </div>
+                                            <div class="col ml--2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="mb-0 text-sm">Alexa Mira</h4>
+                                                    </div>
+                                                    <div class="text-right text-muted">
+                                                        <small>3 hrs ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="text-sm mb-0">Did you have time to read my E-mail?</p>
+                                            </div>
+                                        </div>
+                                    </a>
 
-                                    
+                                    <a href="#!" class="list-group-item list-group-item-action">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-3.jpg" class="avatar rounded-circle">
+                                            </div>
+                                            <div class="col ml--2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="mb-0 text-sm">Rala Micharel</h4>
+                                                    </div>
+                                                    <div class="text-right text-muted">
+                                                        <small>4 hrs ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="text-sm mb-0">Just saw your referring program. Can you please give me more details?</p>
+                                            </div>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                         </li>
@@ -184,25 +220,21 @@
         </nav>
         <div class="container-fluid pt-3 mx-auto">
             <div class="row removable">
-                {% for etapa in etapa_list %}
-                <div class="col-md-3 mb-4">
-                    <div class="card shadow-none px-0 bg-transparent mt-0">
-                        <a href="{{ url_for('etapaQz', numero=etapa[0]) }}" class="btn btn-outline-primary btn-block">
-                            <img src="https://i.ibb.co/St133Pv/DXSHZKl9-4x.jpg" height="450px" width="533px" class="card-img-top" alt="Imagen 1">
-                            <div class="card-body px-0 pb-0">
-                                <h5 class="card-title">Etapa {{ etapa[0] }}</h5>
-                                <p class="card-text">{{ etapa[1] }}</p>
+                <div class="col-lg-12 px-sm-0">
+                    <div class="card shadow-none px-0 bg-transparent mt-0 mb-4">
+                        <div class="card-body px-0 pb-0">
+                            <div class="px-0 pb-4">
+                                <div class="row flex-row">
+                                    
+                                    
+                                    
+                                </div>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
-                {% endfor %}
-
-              
-              
             </div>
         </div>
-          
         <!-- Footer -->
         <footer class="footer pt-0 px-4">
             <div class="row align-items-center justify-content-lg-between">
@@ -231,6 +263,7 @@
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/5cef8f62939eeb089fa26d4c53a49198de421e3d/argon-dashboard/js/vendor/bootstrap.bundle.min.js"></script>
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/5cef8f62939eeb089fa26d4c53a49198de421e3d/argon-dashboard/js/vendor/js.cookie.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="{{url_for('static', filename='js/chat_tera.js')}}"></script>
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/5cef8f62939eeb089fa26d4c53a49198de421e3d/argon-dashboard/js/vendor/chart.extension.js"></script>
     <script src="https://rawcdn.githack.com/Loopple/loopple-public-assets/7bb803d2af2ab6d71d429b0cb459c24a4cd0fbb4/argon-dashboard/js/argon.min.js"></script>
 </body>
