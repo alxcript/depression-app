@@ -1,11 +1,18 @@
-from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for, session, abort
 from TwitterUserManager import TwitterUserManager
+
+from google_auth_oauthlib.flow import Flow
+from google.oauth2 import id_token
+import google.auth.transport.requests
+from pip._vendor import cachecontrol
+import requests
 
 from DepressionDetector import DepressionDetector
 from Chatbot import Chatbot
 from flask_sqlalchemy import SQLAlchemy
 import datetime
-
+import os
+import pathlib
 
 import mysql.connector
 
@@ -35,6 +42,80 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #with app.app_context():
  #   db.create_all()
+
+
+
+#Authentication
+
+app.secret_key = "depressionapp"
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+GOOGLE_CLIENT_ID = "871624759111-t7pa90fse2ahr5dg2rrc5hh576rc91rh.apps.googleusercontent.com"
+
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+
+flow = Flow.from_client_secrets_file(
+    client_secrets_file = client_secrets_file, 
+    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
+    redirect_uri="https://5000-alxcript-depressionapp-xjakubcxflr.ws-us98.gitpod.io/callback"
+    )
+
+
+def login_is_required(function):
+    def wrapper(*args, **kwargs):
+        if "google_id" not in session:
+            return abort(401) # Authorization required
+        else:
+            return function()
+    
+    return wrapper
+
+
+@app.route("/login")
+def login():
+    authoization_url, state = flow.authorization_url()
+    session["state"] = state
+    return redirect(authoization_url)
+
+@app.route("/callback")
+def callback():
+    flow.fetch_token(authorization_response=request.url)
+    if not session["state"] == request.args["state"]:
+        abort(500) # State does not match
+    
+    credentials = flow.credentials
+    request_session = requests.session()
+    cached_session = cachecontrol.CacheControl(request_session)
+    token_request = google.auth.transport.requests.Request(session=cached_session)
+
+    id_info = id_token.verify_token(
+        id_token = credentials.id_token,
+        request = token_request,
+        audience=GOOGLE_CLIENT_ID
+        )
+    
+    session["google_id"] = id_info.get("sub")
+    session["name"] = id_info.get("name")
+    session["email"] = id_info.get("email")
+    session["picture"] = id_info.get("picture")
+    return redirect("/protected_area")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/inicio")
+
+@app.route("/inicio")
+def inicio():
+    return render_template('inicio.html')
+
+@app.route("/protected_area")
+@login_is_required
+def protected_area():
+    return "Protected page! hi " + session["name"] + " <a href='/logout'><button>Logout</button></a><p><img src='" + session["picture"] + "  ' /></p>"
+
+#Administration
+
+
 
 @app.route("/")
 def home():
