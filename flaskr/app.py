@@ -97,7 +97,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
     session["picture"] = id_info.get("picture")
-    return redirect("/protected_area")
+    return redirect("/usuario")
 
 @app.route("/logout")
 def logout():

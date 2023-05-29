@@ -21,10 +21,10 @@
             </div>
             <hr class="mt-0 mb-3">
             <div class="d-flex align-items-center">
-                <img src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg" class="avatar ml-3">
+                <img src="{{session['picture']}}" class="avatar ml-3">
                 <div class="ml-3">
-                    <h4 class="mb-0">Tania Amber</h4>
-                    <p class="text-xs mb-0">Web Developer</p>
+                    <h4 class="mb-0">{{session['name']}}</h4>
+                    <p class="text-xs mb-0">Paciente xx00{{session['google_id']}}</p>
                     
                 </div>
                 
@@ -190,7 +190,7 @@
                             <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div class="media align-items-center">
                                     <span class="avatar avatar-sm">
-                                        <img alt="Image placeholder" src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg">
+                                        <img alt="Image placeholder" src="{{ session['picture'] }}">
                                     </span>
                                 </div>
                             </a>
