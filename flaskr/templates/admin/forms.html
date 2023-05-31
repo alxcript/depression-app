@@ -463,221 +463,140 @@
         </header>
         <main class="h-full pb-16 overflow-y-auto">
           <div class="container px-6 mx-auto grid">
-            <h2
-              class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
-            >
+            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
               Registro de Pacientes
             </h2>
             <!-- CTA -->
-            
-
+        
             <!-- General elements -->
-            <h4
-              class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300"
-            >
+            <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
               Descripcion del Paciente
             </h4>
-            <div
-              class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800"
-            >
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Nombres</span>
-                <input
-                  class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder="Rafael Jesus"
-                />
-              </label>
-              <br>
-
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Apellidos</span>
-                <input
-                  class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder="Valdez Apaza"
-                />
-              </label>
-
-
-              <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">
-                  Sexo
-                </span>
-                <select
-                  class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                >
-                  <option>Hombre</option>
-                  <option>Mujer</option>
-                  <option>Otros</option>
-                </select>
-              </label>
-              
-              <br>
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Fecha de Nacimiento</span>
-                <!-- focus-within sets the color for the icon when input is focused -->
-                <div
-                  class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400"
-                >
+            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+              <form id="registroForm">
+                <label class="block text-sm">
+                  <span class="text-gray-700 dark:text-gray-400">Nombres</span>
                   <input
-                    class="block w-full pl-10 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
-                    placeholder="abc@gmail.com" type="date"
+                    id="nombres"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="Rafael Jesus"
                   />
-                  
-                </div>
-              </label>
-              <br>
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Peso</span>
-                <!-- focus-within sets the color for the icon when input is focused -->
-                <div
-                  class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400"
-                >
-                  <input
-                    class="block w-full pl-10 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
-                    placeholder="KG" 
-                  />
-                  
-                </div>
-              </label>
-
-              <br>
-
-
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Email</span>
-                <!-- focus-within sets the color for the icon when input is focused -->
-                <div
-                  class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400"
-                >
-                  <input
-                    class="block w-full pl-10 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
-                    placeholder="abc@gmail.com"
-                  />
-                  <div
-                    class="absolute inset-y-0 flex items-center ml-3 pointer-events-none"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      aria-hidden="true"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-              </label>
-
-              <br>
-              <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">ID Twitter</span>
-                <!-- focus-within sets the color for the icon when input is focused -->
-                
-                <div
-                  class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400"
-                >
-                  <input
-                    class="block w-full pl-10 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
-                    placeholder="" id="twitter"
-                  />
-                  
-                  <div
-                    class="absolute inset-y-0 flex items-center ml-3 pointer-events-none"
-                  >
-                    <svg
-                    svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"
-                      class="w-5 h-5"
-                      aria-hidden="true"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="4"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        d="M496,109.5a201.8,201.8,0,0,1-56.55,15.3,97.51,97.51,0,0,0,43.33-53.6,197.74,197.74,0,0,1-62.56,23.5A99.14,99.14,0,0,0,348.31,64c-54.42,0-98.46,43.4-98.46,96.9a93.21,93.21,0,0,0,2.54,22.1,280.7,280.7,0,0,1-203-101.3A95.69,95.69,0,0,0,36,130.4C36,164,53.53,193.7,80,211.1A97.5,97.5,0,0,1,35.22,199v1.2c0,47,34,86.1,79,95a100.76,100.76,0,0,1-25.94,3.4,94.38,94.38,0,0,1-18.51-1.8c12.51,38.5,48.92,66.5,92.05,67.3A199.59,199.59,0,0,1,39.5,405.6,203,203,0,0,1,16,404.2,278.68,278.68,0,0,0,166.74,448c181.36,0,280.44-147.7,280.44-275.8,0-4.2-.11-8.4-.31-12.5A198.48,198.48,0,0,0,496,109.5Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="options-wrapper">
-                    <div id="options"></div>
-                  
-                </div>
-                
-              </label>
-
-              
-
-              
-
-
-
-
-
-
-
-              <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Message</span>
-                <textarea
-                  class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                  rows="3"
-                  placeholder="Enter some long form content."
-                ></textarea>
-              </label>
-
-
-
-              <div class="flex mt-6 text-sm">
-                <label class="flex items-center dark:text-gray-400">
-                  <input
-                    type="checkbox"
-                    class="text-purple-600 form-checkbox focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                  />
-                  <span class="ml-2">
-                    I agree to the
-                    <span class="underline">privacy policy</span>
-                  </span>
                 </label>
-              </div>
-
-              <div class="col-md-12">
-                <button type="submit" class="btn btn-primary">Enviar</button>
+                <br>
         
-              </div>
-
+                <label class="block text-sm">
+                  <span class="text-gray-700 dark:text-gray-400">Apellidos</span>
+                  <input
+                    id="apellidos"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="Valdez Apaza"
+                  />
+                </label>
+                <br>
+                <label class="block text-sm">
+                  <span class="text-gray-700 dark:text-gray-400">Dni</span>
+                  <input
+                    id="dni"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="00798456"
+                  />
+                </label>
+        
+                <br>
+        
+                <label class="block text-sm">
+                  <span class="text-gray-700 dark:text-gray-400">Contraseña</span>
+                  <input
+                    id="contrasena"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="00798456"
+                  />
+                </label>
+                <br>
+        
+                <label class="block text-sm">
+                  <span class="text-gray-700 dark:text-gray-400">Imagen</span>
+                  <input
+                    id="imagen"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="00798456"
+                  />
+                </label>
+        
+                <div class="flex mt-6 text-sm">
+                  <label class="flex items-center dark:text-gray-400">
+                    <input
+                      id="agreeCheckbox"
+                      type="checkbox"
+                      class="text-purple-600 form-checkbox focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                    />
+                    <span class="ml-2">
+                      Acepto la
+                      <span class="underline">política de privacidad</span>
+                    </span>
+                  </label>
+                </div>
+        
+                <div class="col-md-12">
+                  <button
+                    id="submitButton"
+                    type="submit"
+                    class="inline-flex items-center justify-center w-full px-4 py-2 text-base font-medium text-white bg-purple-600 border border-transparent rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </form>
             </div>
-
           </div>
         </main>
       </div>
     </div>
     <script>
-      (() => {
-        'use strict'
+      // Captura el evento de envío del formulario
+      document.getElementById('registroForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Evita la recarga de la página
     
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        const forms = document.querySelectorAll('.needs-validation')
+        // Obtén los valores de los campos del formulario
+        var nombres = document.getElementById('nombres').value;
+        var apellidos = document.getElementById('apellidos').value;
+        var dni = document.getElementById('dni').value;
+        var contrasena = document.getElementById('contrasena').value;
+        var imagen = document.getElementById('imagen').value;
+        var agreeCheckbox = document.getElementById('agreeCheckbox').checked;
     
-        // Loop over them and prevent submission
-        Array.from(forms).forEach(form => {
-          form.addEventListener('submit', event => {
-            if (!form.checkValidity()) {
-              event.preventDefault()
-              event.stopPropagation()
+        // Verifica si el checkbox de aceptar está marcado
+        if (!agreeCheckbox) {
+          alert('Debes aceptar la política de privacidad');
+          return;
+        }
+    
+        // Crea un objeto FormData con los datos del formulario
+        var formData = new FormData();
+        formData.append('nombres', nombres);
+        formData.append('apellidos', apellidos);
+        formData.append('dni', dni);
+        formData.append('contrasena', contrasena);
+        formData.append('imagen', imagen);
+    
+        // Realiza una solicitud AJAX para enviar los datos del formulario al servidor
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/registrar_usuario', true);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.success) {
+              alert('Registro exitoso');
+              // Puedes redirigir al usuario a otra página aquí si es necesario
+            } else {
+              alert('Error en el registro');
             }
-    
-            form.classList.add('was-validated')
-          }, false)
-        })
-      })()
+          }
+        };
+        xhr.send(formData);
+      });
     </script>
+    
     
     
     

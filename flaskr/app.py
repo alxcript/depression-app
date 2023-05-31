@@ -47,14 +47,68 @@ def admin_home():
 @app.route('/admin/RegistroPacientes')
 def admin_RegistroPacientes():
     return render_template('admin/forms.html')
+
+@app.route('/registrar_usuario', methods=['POST'])
+def registrar_usuario():
+
+ # Obtén los datos enviados desde el formulario
+    nombre = request.form['nombres']
+    apellido = request.form['apellidos']
+    dni = request.form['dni']
+    contrasena = request.form['contrasena']
+    imagen = request.form['imagen']
+    tipo="Paciente"
+    estado="Activo"
+    nombres=nombre+apellido
+
+    # Realiza la inserción en la base de datos
+    try:
+        # Establece la conexión a la base de datos
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Inserta los datos en la tabla USUARIO
+        query = "INSERT INTO USUARIO (nombre, dni, contrasena, imagen,tipo,estado) VALUES (%s,%s, %s, %s, %s, %s)"
+        values = (nombres, dni, contrasena, imagen,tipo,estado)
+        cursor.execute(query, values)
+        
+        # Guarda los cambios en la base de datos
+        connection.commit()
+
+        # Cierra el cursor y la conexión a la base de datos
+        cursor.close()
+        connection.close()
+
+        # Devuelve una respuesta JSON para indicar el éxito del registro
+        response = {'success': True, 'message': 'Registro exitoso'}
+        return jsonify(response)
+
+    except Exception as e:
+        # En caso de error, devuelve una respuesta JSON con el mensaje de error
+        response = {'success': False, 'message': str(e)}
+        return jsonify(response)
+
+
 @app.route('/admin/GestionarPacientes')
 def admin_GestionarPacientes():
-    return render_template('admin/tables.html')
+    # Establecer la conexión a la base de datos
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+
+    # Ejecutar la consulta SQL
+    query = "SELECT * FROM USUARIO WHERE tipo='Paciente'"
+    cursor.execute(query)
+    usuario_list = cursor.fetchall()
+
+    # Cerrar el cursor y la conexión a la base de datos
+    cursor.close()
+    connection.close()
+    return render_template('admin/tables.html', usuario_list=usuario_list)
 
 
 @app.route('/usuario')
 def usuario():
-    return render_template('usuario/index.html')
+    return render_template('usuario/etapa.html')
 
 @app.route('/chat')
 def chat():
@@ -102,26 +156,66 @@ def etapaQz(numero):
     cursor.close()
     connection.close()
 
-    return render_template('usuario/cuestionario.html', results=results, estructura_calificacion=estructura_calificacion)
+    return render_template('usuario/cuestionario.html', results=results, estructura_calificacion=estructura_calificacion, numero=numero)
 
 
 
 @app.route('/submit', methods=['POST'])
 def submit():
     # Obtener los valores de las respuestas del formulario
+    numero = request.form.get('numero')
     respuestas = []
     for i in range(1, 6):  # Reemplaza 5 por el número de preguntas que tengas
         respuesta = request.form.get(f'pregunta{i}')
         respuestas.append(int(respuesta))
 
     # Calcular el puntaje total
-    score = sum(respuestas)
+    puntaje_total = sum(respuestas)
 
     # Guardar el puntaje en la base de datos
-    
+    #id=session['usuario_actual_id']
+
+
+
+
+    # Calcular el score en base al valor de 'numero'
+    if numero == 1:
+        score = puntaje_total * 0.2
+    elif numero == 2:
+        score = puntaje_total * 0.1
+    elif numero == 3:
+        score = puntaje_total * 0.15
+    elif numero == 4:
+        score = puntaje_total * 0.3
+    elif numero == 5:
+        score = puntaje_total * 0.25
+    elif numero == 6:
+        score = puntaje_total * 0.1
+    elif numero == 7:
+        score = puntaje_total * 0.15
+    elif numero == 8:
+        score = puntaje_total * 0.2
+    elif numero == 9:
+        score = puntaje_total * 0.25
+    elif numero == 10:
+        score = puntaje_total * 0.15
+    else:
+        # Manejar caso de número inválido
+        score = 0
+    # Guardar los detalles del diagnóstico en la base de datos
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "INSERT INTO DETALLES_DIAGNOSTICO (id_diagnostico, id_etapa, score_etapa, estado_etapa) VALUES (%s, %s, %s, %s)"
+    cursor.execute(query, (id_diagnostico, numero, score, clasificacion))
+    connection.commit()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
 
     # Redirigir a la página de resultados
-    return redirect(f'/resultados?score={score}')
+    return redirect(f'/resultados/{numero}?score={score}')
 
 # Ruta para mostrar los resultados
 @app.route('/resultados')

@@ -33,23 +33,31 @@
     </style>
 </head>
 <body>
-    <h1>Puntaje obtenido:</h1>
+    <h1>Puntaje obtenido:{{ numero }}</h1>
     <h2>{{ score }}</h2>
-    {% if score >= 0 and score <= 4 %}
+    {% if score >= 0 and score <= 1.9 %}
         <div class="boton verde">
-            Ausencia de depresión o depresión leve
+            Muy bajo riesgo de depresión
         </div>
-    {% elif score >= 5 and score <= 9 %}
+    {% elif score >= 2 and score <= 2.9 %}
         <div class="boton naranja">
-            Depresión moderada
+            Bajo riesgo de depresión
         </div>
-    {% elif score >= 10 and score <= 14 %}
+    {% elif score >= 3 and score <= 3.9 %}
         <div class="boton rojo">
-            Depresión grave
+            Moderado riesgo de depresión
+        </div>
+    {% elif score >= 4 and score <= 4.9 %}
+        <div class="boton violeta">
+            Alto riesgo de depresión
+        </div>
+    {% elif score == 5 %}
+        <div class="boton violeta">
+            Muy alto riesgo de depresión
         </div>
     {% else %}
-        <div class="boton violeta">
-            Depresión muy grave
+        <div class="boton">
+            Puntaje fuera de rango
         </div>
     {% endif %}
 </body>
