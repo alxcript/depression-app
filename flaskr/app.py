@@ -24,26 +24,9 @@ db_config = {
 }
 
 
-#from flask_sqlalchemy import SQLAlchemy
-#from flask_migrate import Migrate
-
-
-# create the extension
-#db = SQLAlchemy()
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://alxcript_da_use:da*use10@mysql-alxcript.alwaysdata.net/alxcript_depresion_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# initialize the app with the extension
-#db.init_app(app)
-
-#from models import User, DepresionScore, TwitterUser, Tweet, PatientData
-
-#with app.app_context():
- #   db.create_all()
-
-
 
 #Authentication
 
@@ -86,7 +69,6 @@ def login_comun():
     cursor.execute("SELECT * FROM USUARIO WHERE dni = %s and contrasena = %s", (dni, password))
     usuariosCoincidentes = cursor.fetchall()
 
-    # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
@@ -139,7 +121,6 @@ def userNotExist(google_id):
     cursor.execute("SELECT * FROM USUARIO WHERE id_google = %s", (google_id,))
     usuariosCoincidentes = cursor.fetchall()
 
-    # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
@@ -165,7 +146,6 @@ def registrarUsuarioNuevo(nombre, dni, contrasena, imagen, id_google):
     cursor.execute(add_diagnostico, data_diagnostico)
 
     connection.commit()
-    # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
@@ -202,9 +182,7 @@ def registro():
 def protected_area():
     return "Protected page! hi " + session["name"] + " <a href='/logout'><button>Logout</button></a><p><img src='" + session["picture"] + "  ' /></p>"
 
-#Administration
-
-
+#Administracion
 
 @app.route("/")
 def home():
@@ -238,7 +216,6 @@ def etapa():
     cursor.execute(query)
     etapa_list = cursor.fetchall()
 
-    # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
@@ -300,12 +277,6 @@ def resultados():
     score = int(request.args.get('score'))
 
     return render_template('usuario/resultados.html', score=score)
-
-
-
-
-
-
 
 
 @app.get("/formulario")
