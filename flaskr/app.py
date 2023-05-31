@@ -70,11 +70,37 @@ def login_is_required(function):
     return wrapper
 
 
-@app.route("/login")
-def login():
-    authoization_url, state = flow.authorization_url()
+@app.route("/authenticate-google")
+def authenticateGoogle():
+    authorization_url, state = flow.authorization_url()
     session["state"] = state
-    return redirect(authoization_url)
+    return redirect(authorization_url)
+
+@app.route("/login-comun", methods=['POST'])
+def login_comun():
+    dni = request.form["dni"]
+    password = request.form["password"]
+
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM USUARIO WHERE dni = %s and contrasena = %s", (dni, password))
+    usuariosCoincidentes = cursor.fetchall()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    if(usuariosCoincidentes.count == 0):
+        return "no hay usuarios encontrados"
+
+    if(usuariosCoincidentes[0][7] == "Administrador"):
+        return render_template("admin/index.html")
+    else:
+        session["name"] = usuariosCoincidentes[0][1]
+        session["email"] = "email_usuario@gmail.com"
+        session["picture"] = usuariosCoincidentes[0][4]
+        return render_template("usuario/index.html")
+
 
 @app.route("/callback")
 def callback():
@@ -92,21 +118,84 @@ def callback():
         request = token_request,
         audience=GOOGLE_CLIENT_ID
         )
-    
+
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
     session["picture"] = id_info.get("picture")
+
+    if(userNotExist(id_info.get("sub"))):
+        registrarUsuarioNuevo(id_info.get("name"), 'usuario_google', id_info.get("at_hash"), id_info.get("picture"), id_info.get("sub"))
+
+    usuarioId_DiagnosticoId = getUsuarioIdAndDiagnosticoIdByGoogleId(id_info.get("sub"))
+    session["usuario_actual_id"] = usuarioId_DiagnosticoId[0]['usuarioId']
+    session["id_diagnostico"] = usuarioId_DiagnosticoId[0]['diagnosticoId']
+
     return redirect("/usuario")
+
+def userNotExist(google_id):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM USUARIO WHERE id_google = %s", (google_id,))
+    usuariosCoincidentes = cursor.fetchall()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    return len(usuariosCoincidentes) == 0
+
+def registrarUsuarioNuevo(nombre, dni, contrasena, imagen, id_google):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    add_usuario = ("INSERT INTO USUARIO "
+               "(nombre, dni, contrasena, imagen, id_google, estado, tipo) "
+               "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+
+    data_usuario = (nombre, dni, contrasena, imagen, id_google, 'Activo', 'Paciente')
+    cursor.execute(add_usuario, data_usuario)
+    usuarioRegistradoId = cursor.lastrowid
+
+
+    add_diagnostico = ("INSERT INTO DIAGNOSTICO "
+                "(id_usuario) "
+                "VALUES (%s)")
+    data_diagnostico = (usuarioRegistradoId,)
+
+    cursor.execute(add_diagnostico, data_diagnostico)
+
+    connection.commit()
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+def getUsuarioIdAndDiagnosticoIdByGoogleId(id_google):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = ("SELECT USUARIO.id, DIAGNOSTICO.id FROM USUARIO INNER JOIN DIAGNOSTICO ON USUARIO.id = DIAGNOSTICO.id_usuario WHERE id_google = %s")
+    cursor.execute(query, (id_google,))
+
+    values = []
+    for row in cursor:
+        values.append({'usuarioId': row[0], 'diagnosticoId': row[1]})
+
+    cursor.close()
+    connection.close()
+
+    return values
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/inicio")
+    return redirect("/login")
 
-@app.route("/inicio")
-def inicio():
-    return render_template('inicio.html')
+@app.route("/login")
+def login():
+    return render_template('login.html')
+
+@app.route("/registro")
+def registro():
+    return render_template('registro.html')
 
 @app.route("/protected_area")
 @login_is_required
@@ -119,7 +208,7 @@ def protected_area():
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("login.html")
 
 
 @app.route('/admin')
