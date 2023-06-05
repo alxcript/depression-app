@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for, session, abort
 from TwitterUserManager import TwitterUserManager
-
+from decimal import Decimal
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token
 import google.auth.transport.requests
 from pip._vendor import cachecontrol
 import requests
-
+from flask_paginate import Pagination, get_page_args
 from DepressionDetector import DepressionDetector
 from Chatbot import Chatbot
 from flask_sqlalchemy import SQLAlchemy
@@ -39,7 +39,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="https://5000-alxcript-depressionapp-xjakubcxflr.ws-us98.gitpod.io/callback"
+    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us98.gitpod.io/callback"
     )
 
 
@@ -76,7 +76,7 @@ def login_comun():
         return "no hay usuarios encontrados"
 
     if(usuariosCoincidentes[0][7] == "Administrador"):
-        return render_template("admin/index.html")
+        return redirect("/admin")
     else:
         session["name"] = usuariosCoincidentes[0][1]
         session["email"] = "email_usuario@gmail.com"
@@ -191,7 +191,29 @@ def home():
 
 @app.route('/admin')
 def admin_home():
-    return render_template('admin/index.html')
+    # Establecer la conexión a la base de datos
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+
+
+    # Ejecutar la consulta SQL
+    query = "SELECT U.nombre, U.dni, DD.id_etapa, DD.score_etapa, DD.estado_etapa, U.imagen FROM USUARIO U JOIN DIAGNOSTICO D ON U.id = D.id_usuario JOIN DETALLES_DIAGNOSTICO DD ON D.id = DD.id_diagnostico"
+    
+    cursor.execute(query)
+    detalles_list = cursor.fetchall()
+
+    # Imprimir los detalles obtenidos
+    for detalle in detalles_list:
+        print(detalle)
+
+    # Cerrar el cursor y la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    return render_template('admin/index.html', detalles_list=detalles_list)
+
+
+
 @app.route('/admin/RegistroPacientes')
 def admin_RegistroPacientes():
     return render_template('admin/forms.html')
@@ -264,17 +286,25 @@ def chat():
 
 @app.route('/etapa')
 def etapa():
+
+    id_usuario=int(session["usuario_actual_id"])
+    
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query = "SELECT * FROM ETAPA"
-    cursor.execute(query)
-    etapa_list = cursor.fetchall()
+    query_etapas_asignadas = "SELECT id_etapa FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico IN (SELECT id FROM DIAGNOSTICO WHERE id_usuario = %s)"
+    cursor.execute(query_etapas_asignadas, (id_usuario,))
+    etapas_asignadas = [row[0] for row in cursor.fetchall()]
 
+    # Consultar todas las etapas en la tabla ETAPA
+    query_etapas = "SELECT id, tema FROM ETAPA"
+    cursor.execute(query_etapas)
+    etapa_list = cursor.fetchall()
+    completadas_count = len(etapas_asignadas)
+    # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
 
-    # Pasar los datos a la plantilla etapa.html
-    return render_template('usuario/etapa.html', etapa_list=etapa_list)
+    return render_template('usuario/etapa.html', etapa_list=etapa_list, etapas_asignadas=etapas_asignadas, completadas_count=completadas_count)
 
 @app.route('/quiz')
 def quiz():
@@ -310,50 +340,37 @@ def etapaQz(numero):
 @app.route('/submit', methods=['POST'])
 def submit():
     # Obtener los valores de las respuestas del formulario
-    numero = request.form.get('numero')
+    numero = int(request.form.get('numero'))
     respuestas = []
     for i in range(1, 6):  # Reemplaza 5 por el número de preguntas que tengas
         respuesta = request.form.get(f'pregunta{i}')
         respuestas.append(int(respuesta))
 
     # Calcular el puntaje total
-    puntaje_total = sum(respuestas)
+    score = sum(respuestas)
 
     # Guardar el puntaje en la base de datos
-    #id=session['usuario_actual_id']
+    id=int(session["id_diagnostico"])
+    id_usuario = session["usuario_actual_id"]
+    score = sum(respuestas)
 
-
-
-
-    # Calcular el score en base al valor de 'numero'
-    if numero == 1:
-        score = puntaje_total * 0.2
-    elif numero == 2:
-        score = puntaje_total * 0.1
-    elif numero == 3:
-        score = puntaje_total * 0.15
-    elif numero == 4:
-        score = puntaje_total * 0.3
-    elif numero == 5:
-        score = puntaje_total * 0.25
-    elif numero == 6:
-        score = puntaje_total * 0.1
-    elif numero == 7:
-        score = puntaje_total * 0.15
-    elif numero == 8:
-        score = puntaje_total * 0.2
-    elif numero == 9:
-        score = puntaje_total * 0.25
-    elif numero == 10:
-        score = puntaje_total * 0.15
+    if score <= 7:
+        clasificacion = "Muy bajo"
+    elif score <= 11:
+        clasificacion = "Bajo"
+    elif score <= 15:
+        clasificacion = "Moderado"
+    elif score <= 19:
+        clasificacion = "Alto"
     else:
-        # Manejar caso de número inválido
-        score = 0
+        clasificacion = "Muy alto"
+
+    
     # Guardar los detalles del diagnóstico en la base de datos
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
     query = "INSERT INTO DETALLES_DIAGNOSTICO (id_diagnostico, id_etapa, score_etapa, estado_etapa) VALUES (%s, %s, %s, %s)"
-    cursor.execute(query, (id_diagnostico, numero, score, clasificacion))
+    cursor.execute(query, (id, numero, score, clasificacion))
     connection.commit()
 
     # Cerrar la conexión a la base de datos
@@ -361,16 +378,53 @@ def submit():
     connection.close()
 
 
+    if numero==10:
+        
+
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Consulta para calcular el score_final
+        query = """
+            SELECT SUM(dd.score_etapa * e.ponderacion) AS score_final
+            FROM DETALLES_DIAGNOSTICO dd
+            INNER JOIN ETAPA e ON dd.id_etapa = e.id
+            WHERE dd.id_diagnostico = %s
+        """
+
+        cursor.execute(query, (id,))
+        score_final = cursor.fetchone()[0]
+
+        if score_final >= 17:
+            clasificacion_final = "Muy alto riesgo de depresión"
+        elif score_final >= 13:
+            clasificacion_final = "Alto riesgo de depresión"
+        elif score_final >= 9:
+            clasificacion_final = "Moderado riesgo de depresión"
+        elif score_final >= 5:
+            clasificacion_final = "Bajo riesgo de depresión"
+        else:
+            clasificacion_final = "Muy bajo riesgo de depresión"
+
+        # Actualizar el score_final en la tabla DIAGNOSTICO
+        update_query = "UPDATE DIAGNOSTICO SET score_final = %s, estado_final = %s WHERE id = %s AND id_usuario = %s"
+        cursor.execute(update_query, (score_final, clasificacion_final, id, id_usuario))
+        connection.commit()
+
+        # Cerrar la conexión a la base de datos
+        cursor.close()
+        connection.close()
+
+
+
+
     # Redirigir a la página de resultados
-    return redirect(f'/resultados/{numero}?score={score}')
+    return redirect(url_for('etapa'))
 
-# Ruta para mostrar los resultados
-@app.route('/resultados')
-def resultados():
-    # Obtener el puntaje desde la base de datos
-    score = int(request.args.get('score'))
 
-    return render_template('usuario/resultados.html', score=score)
+@app.route('/resultados/score=<float:score>&numero=<int:numero>')
+def resultados(score, numero):
+    return render_template('usuario/resultados.html', score=score, numero=numero)
 
 
 @app.get("/formulario")
