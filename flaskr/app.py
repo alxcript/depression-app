@@ -13,6 +13,12 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 import os
 import pathlib
+from flask import Flask, render_template, request
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+
 
 import mysql.connector
 
@@ -39,7 +45,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us98.gitpod.io/callback"
+    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us100.gitpod.io/callback"
     )
 
 
@@ -288,6 +294,10 @@ def chat():
 def etapa():
 
     id_usuario=int(session["usuario_actual_id"])
+
+    prediction = request.args.get('prediction')
+    porcentaje_cercania = request.args.get('porcentaje_cercania')
+    score_final = request.args.get('score_final')
     
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
@@ -296,7 +306,7 @@ def etapa():
     etapas_asignadas = [row[0] for row in cursor.fetchall()]
 
     # Consultar todas las etapas en la tabla ETAPA
-    query_etapas = "SELECT id, tema FROM ETAPA"
+    query_etapas = "SELECT id, tema, imagen FROM ETAPA"
     cursor.execute(query_etapas)
     etapa_list = cursor.fetchall()
     completadas_count = len(etapas_asignadas)
@@ -304,7 +314,7 @@ def etapa():
     cursor.close()
     connection.close()
 
-    return render_template('usuario/etapa.html', etapa_list=etapa_list, etapas_asignadas=etapas_asignadas, completadas_count=completadas_count)
+    return render_template('usuario/etapa.html', etapa_list=etapa_list, etapas_asignadas=etapas_asignadas, completadas_count=completadas_count,prediction=prediction, porcentaje_cercania=porcentaje_cercania, score_final=score_final)
 
 @app.route('/quiz')
 def quiz():
@@ -414,12 +424,102 @@ def submit():
         # Cerrar la conexión a la base de datos
         cursor.close()
         connection.close()
+        csv_path = os.path.join(app.root_path, 'static', 'datos.csv')
+        # Cargar los datos del archivo CSV
+        df = pd.read_csv(csv_path, encoding='ISO-8859-1')
+
+        # Dividir los datos en características (X) y etiquetas (y)
+        X = df.drop('Score Final', axis=1)
+        y = df['Score Final']
+
+        # Dividir los datos en conjuntos de entrenamiento y prueba
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Crear un objeto de regresión lineal
+        model = LinearRegression()
+
+        # Entrenar el modelo con los datos de entrenamiento
+        model.fit(X_train, y_train)
+
+        # Conectar a la base de datos
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Ejecutar la consulta SQL para obtener los datos del usuario
+        query = """
+        SELECT
+        U.id AS id_usuario,
+        D.score_final,
+        DD.score_etapa AS etapa_1,
+        DD2.score_etapa AS etapa_2,
+        DD3.score_etapa AS etapa_3,
+        DD4.score_etapa AS etapa_4,
+        DD5.score_etapa AS etapa_5,
+        DD6.score_etapa AS etapa_6,
+        DD7.score_etapa AS etapa_7,
+        DD8.score_etapa AS etapa_8,
+        DD9.score_etapa AS etapa_9,
+        DD10.score_etapa AS etapa_10
+        FROM
+        USUARIO U
+        JOIN DIAGNOSTICO D ON U.id = D.id_usuario
+        LEFT JOIN DETALLES_DIAGNOSTICO DD ON D.id = DD.id_diagnostico AND DD.id_etapa = 1
+        LEFT JOIN DETALLES_DIAGNOSTICO DD2 ON D.id = DD2.id_diagnostico AND DD2.id_etapa = 2
+        LEFT JOIN DETALLES_DIAGNOSTICO DD3 ON D.id = DD3.id_diagnostico AND DD3.id_etapa = 3
+        LEFT JOIN DETALLES_DIAGNOSTICO DD4 ON D.id = DD4.id_diagnostico AND DD4.id_etapa = 4
+        LEFT JOIN DETALLES_DIAGNOSTICO DD5 ON D.id = DD5.id_diagnostico AND DD5.id_etapa = 5
+        LEFT JOIN DETALLES_DIAGNOSTICO DD6 ON D.id = DD6.id_diagnostico AND DD6.id_etapa = 6
+        LEFT JOIN DETALLES_DIAGNOSTICO DD7 ON D.id = DD7.id_diagnostico AND DD7.id_etapa = 7
+        LEFT JOIN DETALLES_DIAGNOSTICO DD8 ON D.id = DD8.id_diagnostico AND DD8.id_etapa = 8
+        LEFT JOIN DETALLES_DIAGNOSTICO DD9 ON D.id = DD9.id_diagnostico AND DD9.id_etapa = 9
+        LEFT JOIN DETALLES_DIAGNOSTICO DD10 ON D.id = DD10.id_diagnostico AND DD10.id_etapa = 10
+        WHERE
+        U.id = %s
+        """
+        cursor.execute(query, (id_usuario,))
+        data = cursor.fetchone()
+
+        # Cerrar la conexión a la base de datos
+        cursor.close()
+        conn.close()
+
+        # Datos de prueba
+        X_test = pd.DataFrame({
+            'Autoevaluación': [data[2]],
+            'Relaciones interpersonales': [data[3]],
+            'Actividades diarias': [data[4]],
+            'Autoestima': [data[5]],
+            'Estrés y afrontamiento': [data[6]],
+            'Sueño y descanso': [data[7]],
+            'Salud física': [data[8]],
+            'Metas y aspiraciones': [data[9]],
+            'Resiliencia': [data[10]],
+            'Satisfacción con la vida': [data[11]]
+        })
+
+        # Realizar predicciones en el conjunto de prueba
+        predictions = model.predict(X_test)
+
+        # Valor para comparar
+        valor_real = score_final
+
+        # Calcular el porcentaje de cercanía a la realidad
+        porcentaje_cercania = (1 - abs(float(predictions) - float(valor_real)) / float(valor_real)) * 100
+
+        # Redondear la predicción y el porcentaje de cercanía a 2 decimales
+        prediction = round(predictions[0], 2)
+        porcentaje_cercania = round(porcentaje_cercania, 2)
+
+
+
+
+
 
 
 
 
     # Redirigir a la página de resultados
-    return redirect(url_for('etapa'))
+    return redirect(url_for('etapa', prediction=prediction, porcentaje_cercania=porcentaje_cercania,score_final=score_final))
 
 
 @app.route('/resultados/score=<float:score>&numero=<int:numero>')

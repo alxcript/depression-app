@@ -21,7 +21,7 @@
         <div class="col-md-3 mb-4">
             <div class="card shadow-none px-0 bg-transparent mt-0">
                 
-                    <img src="https://i.ibb.co/St133Pv/DXSHZKl9-4x.jpg" height="450px" width="533px" class="card-img-top2" alt="Imagen 1">
+                    <img src="{{ etapa[2] }}" height="450px" width="533px" class="card-img-top2" alt="Imagen 1">
                     <span class="sello">Completado{{ completadas_count }}</span>
                     <div class="card-body px-0 pb-0">
                         <h5 class="card-title" style="color: gray;">Etapa {{ etapa[0] }}</h5>
@@ -39,7 +39,10 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="miModalLabel">Título del Modal</h5>
+          <h5 class="modal-title" id="miModalLabel">Usted culmino con exito las 10 etapas de diagnotico</h5>
+          <p>Score Final: {{ score_final }}</p>
+          <p>% de Fiabilidad de Resultado: {{ porcentaje_cercania }} %</p>
+          <p>Prediccion: {{ prediction }}</p>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
