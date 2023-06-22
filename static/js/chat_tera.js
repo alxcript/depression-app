@@ -3,7 +3,7 @@ const generateResponseUrl = document.getElementById('query-input').getAttribute(
 
 inputField.addEventListener('keydown', event => {
   if (event.key === 'Enter') {
-    event.preventDefault();
+    event.preventDefault(); // Evita el comportamiento predeterminado de la tecla "Enter"
 
     const query = inputField.value;
 
