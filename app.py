@@ -45,7 +45,11 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
+<<<<<<< HEAD:flaskr/app.py
     redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us101.gitpod.io/callback"
+=======
+    redirect_uri="https://depresionapp.azurewebsites.net/callback"
+>>>>>>> 806fd6c0f9cd56a669e4622d3df130bc0ec309e2:app.py
     )
 
 
