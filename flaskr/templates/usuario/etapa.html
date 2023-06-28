@@ -4,32 +4,33 @@
 
 {% for etapa in etapa_list %}
     {% if etapa[0] not in etapas_asignadas %}
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-none px-0 bg-transparent mt-0">
-                <a href="{{ url_for('etapaQz', numero=etapa[0]) }}" class="btn btn-outline-primary btn-block">
-                    <img src="https://i.ibb.co/St133Pv/DXSHZKl9-4x.jpg" height="450px" width="533px" class="card-img-top"
-                        alt="Imagen 1">
-                    <div class="card-body px-0 pb-0">
-                        <h5 class="card-title">Etapa {{ etapa[0] }}</h5>
-                        <p class="card-text">{{ etapa[1] }}</p>
-                    </div>
-                </a>
-            </div>
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-none px-0 bg-transparent mt-0">
+            
+                <img src="{{ etapa[2] }}" height="450px" width="533px" class="card-img-top2" alt="Imagen 1">
+                <span class="sello">Completado{{ completadas_count }}</span>
+                <div class="card-body px-0 pb-0">
+                    <h5 class="card-title" style="color: gray;">Etapa {{ etapa[0] }}</h5>
+                    <p class="card-text" style="color: gray;">{{ etapa[1] }}</p>
+                </div>
+            
         </div>
+    </div>
         
     {% else %}
+        
         <div class="col-md-3 mb-4">
-            <div class="card shadow-none px-0 bg-transparent mt-0">
-                
-                    <img src="{{ etapa[2] }}" height="450px" width="533px" class="card-img-top2" alt="Imagen 1">
-                    <span class="sello">Completado{{ completadas_count }}</span>
-                    <div class="card-body px-0 pb-0">
-                        <h5 class="card-title" style="color: gray;">Etapa {{ etapa[0] }}</h5>
-                        <p class="card-text" style="color: gray;">{{ etapa[1] }}</p>
-                    </div>
-                
-            </div>
-        </div>
+          <div class="card shadow-none px-0 bg-transparent mt-0">
+              <a href="{{ url_for('etapaQz', numero=etapa[0]) }}" class="btn btn-outline-primary btn-block">
+                  <img src="{{ etapa[2] }}" height="450px" width="533px" class="card-img-top"
+                      alt="Imagen 1">
+                  <div class="card-body px-0 pb-0">
+                      <h5 class="card-title">Etapa {{ etapa[0] }}</h5>
+                      <p class="card-text">{{ etapa[1] }}</p>
+                  </div>
+              </a>
+          </div>
+      </div>
         
     {% endif %}
 {% endfor %}

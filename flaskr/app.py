@@ -23,10 +23,10 @@ from sklearn.model_selection import train_test_split
 import mysql.connector
 
 db_config = {
-    'user': 'uxo2ihlb0xdfqqsl',
-    'password': 'hxrJaC3zfpXk8yVJ9iAv',
-    'host': 'b6l5dugohgvzb9gw6u4o-mysql.services.clever-cloud.com',
-    'database': 'b6l5dugohgvzb9gw6u4o',
+    'user': '318180_admin',
+    'password': '2019063317',
+    'host': 'mysql-dbmental123.alwaysdata.net',
+    'database': 'dbmental123_koala',
 }
 
 
@@ -45,7 +45,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us100.gitpod.io/callback"
+    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us101.gitpod.io/callback"
     )
 
 
@@ -301,7 +301,8 @@ def etapa():
     
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query_etapas_asignadas = "SELECT id_etapa FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico IN (SELECT id FROM DIAGNOSTICO WHERE id_usuario = %s)"
+    query_etapas_asignadas = "SELECT (max(id_etapa)+1) FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico IN (SELECT id FROM DIAGNOSTICO WHERE id_usuario = %s)"
+    
     cursor.execute(query_etapas_asignadas, (id_usuario,))
     etapas_asignadas = [row[0] for row in cursor.fetchall()]
 
@@ -509,6 +510,7 @@ def submit():
         # Redondear la predicción y el porcentaje de cercanía a 2 decimales
         prediction = round(predictions[0], 2)
         porcentaje_cercania = round(porcentaje_cercania, 2)
+        return redirect(url_for('etapa', prediction=prediction, porcentaje_cercania=porcentaje_cercania,score_final=score_final))
 
 
 
@@ -519,7 +521,8 @@ def submit():
 
 
     # Redirigir a la página de resultados
-    return redirect(url_for('etapa', prediction=prediction, porcentaje_cercania=porcentaje_cercania,score_final=score_final))
+    return redirect(url_for('etapa'))
+    
 
 
 @app.route('/resultados/score=<float:score>&numero=<int:numero>')
