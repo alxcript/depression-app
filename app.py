@@ -45,11 +45,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-<<<<<<< HEAD:flaskr/app.py
-    redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us101.gitpod.io/callback"
-=======
-    redirect_uri="https://depresionapp.azurewebsites.net/callback"
->>>>>>> 806fd6c0f9cd56a669e4622d3df130bc0ec309e2:app.py
+    redirect_uri="https://5000-alxcript-depressionapp-xjakubcxflr.ws-us101.gitpod.io/callback"
     )
 
 
@@ -59,8 +55,14 @@ def login_is_required(function):
             return abort(401) # Authorization required
         else:
             return function()
-    
+    # Renaming the function name:
+    wrapper.__name__ = function.__name__
     return wrapper
+
+
+@app.errorhandler(401)
+def custom_401(error):
+    return render_template("exceptions/401.html")
 
 
 @app.route("/authenticate-google")
@@ -122,8 +124,28 @@ def callback():
     usuarioId_DiagnosticoId = getUsuarioIdAndDiagnosticoIdByGoogleId(id_info.get("sub"))
     session["usuario_actual_id"] = usuarioId_DiagnosticoId[0]['usuarioId']
     session["id_diagnostico"] = usuarioId_DiagnosticoId[0]['diagnosticoId']
+    session["chat_activado"] = isChatActivado(session["id_diagnostico"])
 
     return redirect("/usuario")
+
+def isChatActivado(id_diagnostico):
+
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico = %s", (id_diagnostico,))
+    modoDelaUltimaEtapa = "noregistrado"
+    listaEtapasDelUsuario = cursor.fetchall()
+    if(len(listaEtapasDelUsuario) > 0):
+        modoDelaUltimaEtapa = listaEtapasDelUsuario.pop()[3].lower()
+    print("modoDelaUltimaEtapa:", modoDelaUltimaEtapa)
+    cursor.close()
+    connection.close()
+
+    isChatActivado = "no"
+    if(modoDelaUltimaEtapa in ['moderado', 'alto', 'muy alto']):
+        isChatActivado = "yes"
+    
+    return isChatActivado
 
 def userNotExist(google_id):
     connection = mysql.connector.connect(**db_config)
@@ -286,7 +308,8 @@ def admin_GestionarPacientes():
     return render_template('admin/tables.html', usuario_list=usuario_list)
 
 
-@app.route('/usuario')
+@app.route("/usuario")
+@login_is_required
 def usuario():
     return render_template('usuario/etapa.html')
 
@@ -519,13 +542,13 @@ def submit():
 
 
 
+    session["chat_activado"] = isChatActivado(session["id_diagnostico"])
 
+    if(clasificacion not in ["Moderado", "Alto", "Muy alto"]):
+        # Redirigir a la página de resultados
+        return redirect(url_for('etapa'))
 
-
-
-
-    # Redirigir a la página de resultados
-    return redirect(url_for('etapa'))
+    return render_template('usuario/chat.html', clasificacion=clasificacion)
     
 
 
@@ -600,7 +623,8 @@ def searchUserInTwitter(username):
 @app.route("/generate-chatbot-response", methods=["POST"])
 def generateResponseChatbot():
     chatbot = Chatbot()
-    response = chatbot.generateResponse(request.json["query"])
+    modo = "Muy alto"
+    response = chatbot.generateResponse(request.json["query"], modo)
     return jsonify({
         "response": response,
         "datetime": datetime.datetime.now()
