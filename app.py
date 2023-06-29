@@ -45,11 +45,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(
     client_secrets_file = client_secrets_file, 
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-<<<<<<< HEAD:flaskr/app.py
     redirect_uri="https://5000-alxcript-depressionapp-1yj4bhu0xju.ws-us101.gitpod.io/callback"
-=======
-    redirect_uri="https://depresionapp.azurewebsites.net/callback"
->>>>>>> 806fd6c0f9cd56a669e4622d3df130bc0ec309e2:app.py
     )
 
 
@@ -223,7 +219,38 @@ def admin_home():
     return render_template('admin/index.html', detalles_list=detalles_list)
 
 
+@app.route('/admin/resultado/<int:usuario_id>')
+def resultado(usuario_id):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
 
+    # Obtener los datos del paciente, el score final y la clasificación final de diagnóstico
+    query_datos_paciente = """
+        SELECT U.nombre, D.score_final, D.estado_final
+        FROM USUARIO U
+        JOIN DIAGNOSTICO D ON U.id = D.id_usuario
+        WHERE U.id = %s
+    """
+    cursor.execute(query_datos_paciente, (usuario_id,))
+    datos_paciente = cursor.fetchone()
+
+    # Obtener los datos del diagnóstico y los detalles del diagnóstico
+    query_diagnostico = """
+        SELECT DD.id_etapa, E.tema, DD.score_etapa, DD.estado_etapa
+        FROM DIAGNOSTICO D
+        JOIN DETALLES_DIAGNOSTICO DD ON D.id = DD.id_diagnostico
+        JOIN ETAPA E ON DD.id_etapa = E.id
+        WHERE D.id_usuario = %s
+        ORDER BY DD.id_etapa
+    """
+    cursor.execute(query_diagnostico, (usuario_id,))
+    resultados = cursor.fetchall()
+
+    # Cerrar la conexión a la base de datos
+    cursor.close()
+    connection.close()
+
+    return render_template('admin/resultado.html', datos_paciente=datos_paciente, resultados=resultados)
 @app.route('/admin/RegistroPacientes')
 def admin_RegistroPacientes():
     return render_template('admin/forms.html')
@@ -276,7 +303,7 @@ def admin_GestionarPacientes():
     cursor = connection.cursor()
 
     # Ejecutar la consulta SQL
-    query = "SELECT * FROM USUARIO WHERE tipo='Paciente'"
+    query = "SELECT u.*, d.score_final, d.estado_final FROM USUARIO u JOIN DIAGNOSTICO d ON u.id = d.id_usuario WHERE u.tipo = 'Paciente'"
     cursor.execute(query)
     usuario_list = cursor.fetchall()
 
@@ -305,7 +332,7 @@ def etapa():
     
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query_etapas_asignadas = "SELECT (max(id_etapa)+1) FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico IN (SELECT id FROM DIAGNOSTICO WHERE id_usuario = %s)"
+    query_etapas_asignadas = "SELECT COALESCE((SELECT MAX(id_etapa) + 1 FROM DETALLES_DIAGNOSTICO WHERE id_diagnostico IN (SELECT id FROM DIAGNOSTICO WHERE id_usuario = %s)), 1) AS next_id_etapa;"
     
     cursor.execute(query_etapas_asignadas, (id_usuario,))
     etapas_asignadas = [row[0] for row in cursor.fetchall()]
@@ -314,7 +341,7 @@ def etapa():
     query_etapas = "SELECT id, tema, imagen FROM ETAPA"
     cursor.execute(query_etapas)
     etapa_list = cursor.fetchall()
-    completadas_count = len(etapas_asignadas)
+    completadas_count = int(etapas_asignadas[0])
     # Cerrar la conexión a la base de datos
     cursor.close()
     connection.close()
