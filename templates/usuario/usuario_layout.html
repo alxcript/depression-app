@@ -55,7 +55,8 @@
                                     <span class="nav-link-text">Proceso de Evaluación</span>
                                 </a>
                             </li>
-    
+
+                            {% if session["chat_activado"] == "yes" %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('chat') }}">
                                     
@@ -63,6 +64,17 @@
                                     <span class="nav-link-text">Chat Terapeuta</span>
                                 </a>
                             </li>
+                            {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="{{ url_for('chat') }}">
+                                    
+                                    <i class="fas fa-robot" style="color: #828282;"></i>
+                                    <span class="nav-link-text">Chat Terapeuta</span>
+                                </a>
+                            </li>
+                            {% endif %}
+    
+                            
                             
                             <li class="nav-item">
                                 <a class="nav-link" href="javascript:">
